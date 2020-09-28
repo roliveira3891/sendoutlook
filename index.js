@@ -2,6 +2,8 @@ require('dotenv').config();
 
 var nodemailer = require('nodemailer')
 var table = require('./dados')
+var CronJob = require('cron').CronJob
+
 
 async function enviar(data, tecnologia){
     var transporter = nodemailer.createTransport({
@@ -31,7 +33,18 @@ async function enviar(data, tecnologia){
     console.log("Data / Hora ", Date())
 }
 
-main()
+
+const job = new CronJob('59 7-17 * * *',()=>{
+    console.log("Iniciando ", Date())
+    try{
+        main()
+    }catch(e){
+        console.error('Erro:',e)
+    }
+},null,true, 'America/Sao_Paulo')
+
+
+
 async function main() {
     const resultadoGPON = await Promise.all([
       table.datatable('GPON'),
@@ -44,4 +57,7 @@ async function main() {
     enviar(resultadomETALICO,'S6 (Platinum) MASSIVO')
    
 }
+
+
+
 
